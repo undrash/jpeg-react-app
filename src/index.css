@@ -12,8 +12,19 @@ code {
     monospace;
 }
 
-
-textarea, input, button, img {
+textarea,
+input,
+button,
+img {
   display: block;
   margin: 10px auto;
+}
+
+button {
+  padding: 10px;
+  background-color: black;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }

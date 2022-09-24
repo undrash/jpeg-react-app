@@ -7,6 +7,8 @@ module.exports = override(
     };
     config.optimization.runtimeChunk = false;
 
+    config.output.filename = 'static/js/[name].js';
+
     return config;
   },
   adjustStyleLoaders(({ use }) => {
