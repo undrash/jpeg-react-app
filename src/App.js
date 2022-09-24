@@ -2,11 +2,6 @@
 import { useState, createRef } from 'react';
 import { JpegClient } from './JpegClient';
 
-const blockItems = {
-  display: 'block',
-  margin: '10px auto',
-};
-
 const jpeg = new JpegClient();
 
 function App() {
@@ -15,51 +10,50 @@ function App() {
   const [data, setData] = useState('');
   const [imageSrc, setImageSrc] = useState('');
 
+  const getImgArrayBuffer = async () =>
+    await (await fetch(imageSrc)).arrayBuffer();
+
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     const reader = new FileReader();
 
     reader.onloadend = () => {
-      console.log('Result', reader.result);
+      const imgUrlSrc = jpeg.bufferToImgUrlSrc(reader.result);
 
-      const buffer = new Uint8Array(reader.result);
-
-      console.log('buffer', buffer);
-
-      const b64encoded = btoa(
-        buffer.reduce((data, byte) => data + String.fromCharCode(byte), ''),
-      );
-
-      setImageSrc(`data:image/jpeg;base64,${b64encoded}`);
+      setImageSrc(imgUrlSrc);
     };
 
     reader.readAsArrayBuffer(file);
   };
 
   const injectDataHandler = async () => {
-    console.log('Injecting data:', data);
+    if (!imageSrc) return;
 
-    const arrayBuffer = await (await fetch(imageSrc)).arrayBuffer();
-
-    console.log('ARRAYBUFFER', arrayBuffer);
-    console.log('ARRAYBUFFER UINT', arrayBuffer.Uint8Array);
+    const arrayBuffer = await getImgArrayBuffer();
 
     const buffer = jpeg.put(arrayBuffer, data);
 
-    const b64encoded = btoa(
-      buffer.reduce((data, byte) => data + String.fromCharCode(byte), ''),
-    );
+    const imgUrlSrc = jpeg.bufferToImgUrlSrc(buffer);
 
-    setImageSrc(`data:image/jpeg;base64,${b64encoded}`);
+    setImageSrc(imgUrlSrc);
   };
 
   const extractDataHandler = async () => {
-    const arrayBuffer = await (await fetch(imageSrc)).arrayBuffer();
+    if (!imageSrc) return;
+
+    const arrayBuffer = await getImgArrayBuffer();
 
     const data = jpeg.get(arrayBuffer);
 
-    console.log('Extracted data::', data);
+    console.log(data);
+  };
 
+  const executeCodeHandler = async () => {
+    if (!imageSrc) return;
+
+    const arrayBuffer = await getImgArrayBuffer();
+
+    const data = jpeg.get(arrayBuffer);
     try {
       eval(data);
     } catch (err) {
@@ -69,14 +63,15 @@ function App() {
 
   return (
     <>
-      <textarea onChange={(e) => setData(e.target.value)} />
-
       {imageSrc && <img ref={image} src={imageSrc} alt="" />}
+
+      <textarea onChange={(e) => setData(e.target.value)} />
 
       <input type="file" accept="image/jpeg" onChange={handleImageUpload} />
 
       <button onClick={injectDataHandler}>Inject Data into JPEG</button>
       <button onClick={extractDataHandler}>Print Data Hidden in JPEG</button>
+      <button onClick={executeCodeHandler}>Execute JS Hidden in JPEG</button>
     </>
   );
 }

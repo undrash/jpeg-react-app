@@ -53,10 +53,14 @@ export class JpegClient {
   }
 
   put(imageBuffer, data) {
-    if (!imageBuffer || !data) {
+    if (!imageBuffer) {
       throw new Error(
-        "Please provide a jpeg image buffer and the data you'd like to write to the image.",
+        "Please provide a jpeg image buffer you'd like to write to.",
       );
+    }
+
+    if (!data) {
+      throw new Error('Please provide data you would like to write.');
     }
 
     if (typeof data !== 'string' && !(data instanceof String)) {
@@ -71,49 +75,48 @@ export class JpegClient {
 
     const dataHex = this.stringToHex(data);
 
-    console.log('ORIGINAL HEX @ put', hex);
-    console.log('INJECTING DATAHEX', dataHex);
-
     hex += dataHex;
-
-    console.log('CONCATENATED HEX', hex);
-
-    const bytes = this.hexToBytes(hex);
-
-    const hexagain = this.bytesToHex(bytes);
-
-    console.log('BYTES TO HEX AGAIN', hexagain);
 
     return new Uint8Array(this.hexToBytes(hex));
   }
 
   get(imageBuffer) {
+    if (!imageBuffer) {
+      throw new Error(
+        "Please provide a jpeg image buffer you'd like to read from.",
+      );
+    }
+
     const array = new Uint8Array(imageBuffer);
 
     const hex = this.bytesToHex(array);
-
-    console.log('ORIGINAL HEX @ get', hex);
 
     const dataHex = hex.substring(
       hex.lastIndexOf(this.END_MARKER) + this.END_MARKER.length,
     );
 
-    console.log('EXTRACTED DATAHEX', dataHex);
-
-    if (!dataHex) return null;
+    if (!dataHex) return '';
 
     const dataString = this.stringFromHex(dataHex);
-
-    // return JSON.parse(dataString);
 
     return dataString;
   }
 
-  bufferToImageUrl(buffer) {
-    const blob = new Blob([buffer], { type: 'image/jpeg' });
+  bufferToImgUrlSrc(imageBuffer) {
+    const blob = new Blob([imageBuffer], { type: 'image/jpeg' });
     const urlCreator = window.URL || window.webkitURL;
     const imageUrl = urlCreator.createObjectURL(blob);
 
     return imageUrl;
+  }
+
+  bufferToBase64Src(arrayBuffer) {
+    const buffer = new Uint8Array(arrayBuffer);
+
+    const b64encoded = btoa(
+      buffer.reduce((data, byte) => data + String.fromCharCode(byte), ''),
+    );
+
+    return `data:image/jpeg;base64,${b64encoded}`;
   }
 }
