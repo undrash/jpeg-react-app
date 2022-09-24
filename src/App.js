@@ -9,6 +9,7 @@ function App() {
 
   const [data, setData] = useState('');
   const [imageSrc, setImageSrc] = useState('');
+  const [consoleData, setConsoleData] = useState('');
 
   const getImgArrayBuffer = async () =>
     await (await fetch(imageSrc)).arrayBuffer();
@@ -46,6 +47,8 @@ function App() {
     const data = jpeg.get(arrayBuffer);
 
     console.log(data);
+
+    setConsoleData(data);
   };
 
   const executeCodeHandler = async () => {
@@ -63,7 +66,14 @@ function App() {
 
   return (
     <>
-      {imageSrc && <img ref={image} src={imageSrc} alt="" />}
+      {imageSrc && (
+        <>
+          <div className="header">
+            <img ref={image} src={imageSrc} alt="" />
+            <div className="console">{consoleData}</div>
+          </div>
+        </>
+      )}
 
       <textarea onChange={(e) => setData(e.target.value)} />
 
