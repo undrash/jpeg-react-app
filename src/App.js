@@ -64,6 +64,13 @@ function App() {
     }
   };
 
+  const downloadHandler = () => {
+    const link = document.createElement('a');
+    link.download = 'image.jpeg';
+    link.href = imageSrc;
+    link.click();
+  };
+
   return (
     <>
       {imageSrc && (
@@ -82,6 +89,7 @@ function App() {
       <button onClick={injectDataHandler}>Inject Data into JPEG</button>
       <button onClick={extractDataHandler}>Print Data Hidden in JPEG</button>
       <button onClick={executeCodeHandler}>Execute JS Hidden in JPEG</button>
+      {imageSrc && <button onClick={downloadHandler}>Download</button>}
     </>
   );
 }
