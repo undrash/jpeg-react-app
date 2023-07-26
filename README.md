@@ -1,5 +1,7 @@
-# Hide a React App Inside a JPEG and Run It
+# Hide a React App Inside a JPEG (and run it)
 
-This is the accompanying repository for the article _Hide a React App Inside a JPEG and Run It_.
+This is the accompanying repository for the article _Hide a React App Inside a JPEG (and run it)_.
 
-All the code can be found in the `src` folder.
+![React Inside](./react-inside.jpeg)
+
+The JPEG related methods are in the [JpegClient.js](./src/JpegClient.js) which is used in the [App.js](./src/App.js) to implement the UI.
